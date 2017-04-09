@@ -2,6 +2,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var cognitiveservices = require('botbuilder-cognitiveservices');
+var sentimentService = require('./getSentiment');
 
 //=========================================================
 // Bot Setup
@@ -36,7 +37,7 @@ intents.onDefault([
         }
     },
     function (session, results) {
-        session.send('Hello %s!', session.userData.name);
+        session.send('Hello %s Tell me how you feel!', session.userData.name);
     }
 ]);
 
@@ -54,18 +55,20 @@ intents.matches(/boost/i, [
         session.beginDialog('/boost');
     },
     function (session, results){
-      session.send('the string to analyze is %s', session.userData.stringToAnalyze);
-      //var score = analyzeSentiment(session.userData.stringToAnalyze);
-      var score = 100;
-      if (score >= 50){
-          var cardh = createHappyCard(session);
-          var msgh = new builder.Message(session).addAttachment(cardh);
-          session.send(msgh);
-      }else if (score < 50) {
-          var cards = createSadCard(session);
-          var msgs = new builder.Message(session).addAttachment(cards);
-          session.send(msgs);
-      }
+      sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
+        console.log(score);
+        if (score >= 50){
+            var cardh = createHappyCard(session);
+            var msgh = new builder.Message(session).addAttachment(cardh);
+            session.send(msgh);
+        }else if (score < 50) {
+            var cards = createSadCard(session);
+            var msgs = new builder.Message(session).addAttachment(cards);
+            session.send(msgs);
+        }
+      }).catch(function (error) {
+        console.error(error);
+      });
     }
 ]);
 
