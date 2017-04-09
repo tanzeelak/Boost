@@ -47,9 +47,9 @@ intents.onDefault([
         sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
         console.log(score);
         if (score >= 50){
-          songService.selectSong(score).then(function (link) {
+          songService.selectSong(score).then(function (linkh) {
             console.log(link);
-
+            link = linkh;
             var cardh = createHappyCard(session);
             var msgh = new builder.Message(session).addAttachment(cardh);
             session.send(msgh);
@@ -129,6 +129,8 @@ bot.dialog('/boost', [
 //=========================================================
 function createHappyCard(session) {
     session.send("Glad to hear that you're feeling good today! :)");
+    var str1 = 'YouTube Link: ';
+    var title = str1.concat(link);
     return new builder.HeroCard(session)
         .title('Song')
         .subtitle('Boost your mood with a song!')
@@ -137,7 +139,7 @@ function createHappyCard(session) {
             builder.CardImage.create(session, 'http://www.clipartkid.com/images/76/cute-smiley-face-clipart-best-p6NKfr-clipart.jpeg')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, "https://www.youtube.com/", 'YouTube')
+            builder.CardAction.openUrl(session, link, title)
         ]);
 }
 

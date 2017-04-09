@@ -38,7 +38,7 @@ exports.selectSong = function(score){
         request(searchUrl2, function (error, response, body) {
           console.log("request");
           console.log("please e" + searchUrl2)
-          if (!error && response.statusCode == 200) { 
+          if (!error && response.statusCode == 200) {
             resolve(getURL(body));
           }
         });
@@ -50,7 +50,7 @@ function getURL(body) {
     console.log("geturl");
     var vidId, playListId, parsedBody, ytUrl;
     parsedBody = JSON.parse(body);
-    var randSong = Math.floor(Math.random() * 10);
+    var randSong = Math.floor(Math.random() * 5);
     vidId = parsedBody.items[randSong].snippet.resourceId.videoId;
     ytUrl = "https://www.youtube.com/watch?v=" + vidId;
     //console.log(ytUrl);
