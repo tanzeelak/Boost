@@ -155,9 +155,27 @@ bot.dialog('/happy', [
         // var msgh = new builder.Message(session).addAttachment(cardh);
         // session.send(msgh);
 
-        var card = createFunnyCard(session);
-        var msg =  new builder.Message(session).addAttachment(card);
-        session.send(msg);
+        var card = search.imageSearch("funny memes").then(function (urlresult) {
+          
+        var imgURL = urlresult.slice(0, urlresult.length - 15);
+        // var imgURL = urlresult;
+        console.log(imgURL);
+          var imgDisp = new builder.HeroCard(session)
+            .title('memez')
+            .subtitle('lmao')
+            .text('eyyy')
+            .images([
+                builder.CardImage.create(session, imgURL)
+            ])
+            .buttons([]);
+
+            var msg =  new builder.Message(session).addAttachment(imgDisp);
+            session.send(msg);
+        }).catch(function (error) {
+          console.error(error);
+        });
+
+        
     }
 ]);
 
@@ -184,7 +202,8 @@ function createFunnyCard(session) {
     console.log("mark4");
     search.imageSearch("funny memes").then(function (urlresult) {
           
-        var imgURL = urlresult.slice(0, urlresult.length - 15);
+        //var imgURL = urlresult.slice(0, urlresult.length - 15);
+        var imgURL = "http://www.bing.com/cr?IG=7E952BACA994473DA6F9B92566698324&CID=25EF1EA32A1C64213D0914FC2B436549&rd=1&h=E_T3jWxvbGD1luWzJrJrs1vVh7rUFJ6425v2F6FJfuo&v=1&r=http%3a%2f%2fs5.favim.com%2forig%2f74%2ffunny-kids-funny-memes-funny-quotes-and-sayings-funny-images-funny-pictures-Favim.com-753774.jpg";
         console.log(imgURL);
           return new builder.HeroCard(session)
             .title('memez')
