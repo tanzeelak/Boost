@@ -62,11 +62,9 @@ exports.analyzeKeyTopic = function (sentence) {
 function extractTopic(body) {
 	if (body) {
 		body = JSON.parse(body);
-		if (body.documents && body.documents[0]['keyPhrases'][0]) {
-			return body.documents[0]['keyPhrases'][0];
-		}
+		return body.documents[0]['keyPhrases'][0];
 	}
-	return "";
+	return "no topic";
 }
 function extractScore(body) {
 	var totalScore = 0;
