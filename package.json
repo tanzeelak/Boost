@@ -1,0 +1,31 @@
+{
+  "name": "boost",
+  "version": "1.0.0",
+  "description": "Boost your mood with songs and amusing pictures! :D",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanzeelak/Boost.git"
+  },
+  "keywords": [
+    "boost",
+    "mood",
+    "songs",
+    "funny",
+    "pictures"
+  ],
+  "author": "Katrina Duong, Tanzeela Khan, Jessica Wang, and Nicole Wong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tanzeelak/Boost/issues"
+  },
+  "homepage": "https://github.com/tanzeelak/Boost#readme",
+  "dependencies": {
+    "botbuilder": "^3.7.0",
+    "botbuilder-cognitiveservices": "^1.0.1",
+    "restify": "^4.3.0"
+  }
+}
