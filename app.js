@@ -2,6 +2,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var cognitiveservices = require('botbuilder-cognitiveservices');
+var sentimentService = require('./getSentiment');
 
 //=========================================================
 // Bot Setup
@@ -36,7 +37,25 @@ intents.onDefault([
         }
     },
     function (session, results) {
-        session.send('Hello %s!', session.userData.name);
+        session.beginDialog('/boost');
+        next();
+    },
+    function (session, results){
+        sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
+        console.log(score);
+        if (score >= 50){
+            var cardh = createHappyCard(session);
+            var msgh = new builder.Message(session).addAttachment(cardh);
+            session.send(msgh);
+        }else if (score < 50) {
+            var cards = createSadCard(session);
+            var msgs = new builder.Message(session).addAttachment(cards);
+            session.send(msgs);
+        }
+        session.send("I hope I was able to brighten your day!");
+      }).catch(function (error) {
+        console.error(error);
+      });
     }
 ]);
 
@@ -54,18 +73,20 @@ intents.matches(/boost/i, [
         session.beginDialog('/boost');
     },
     function (session, results){
-      session.send('the string to analyze is %s', session.userData.stringToAnalyze);
-      //var score = analyzeSentiment(session.userData.stringToAnalyze);
-      var score = 100;
-      if (score >= 50){
-          var cardh = createHappyCard(session);
-          var msgh = new builder.Message(session).addAttachment(cardh);
-          session.send(msgh);
-      }else if (score < 50) {
-          var cards = createSadCard(session);
-          var msgs = new builder.Message(session).addAttachment(cards);
-          session.send(msgs);
-      }
+        sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
+        console.log(score);
+        if (score >= 50){
+            var cardh = createHappyCard(session);
+            var msgh = new builder.Message(session).addAttachment(cardh);
+            session.send(msgh);
+        }else if (score < 50) {
+            var cards = createSadCard(session);
+            var msgs = new builder.Message(session).addAttachment(cards);
+            session.send(msgs);
+        }
+      }).catch(function (error) {
+        console.error(error);
+      });
     }
 ]);
 
@@ -120,8 +141,23 @@ function createHappyCard(session) {
         ]);
 }
 
+var quotes = ["Vince Lombardi once said, 'It's not whether you get knocked down, it's whether you get up.'",
+                "Helen Keller once said, 'Optimism is the faith that leads to achievement. Nothing can be done without hope and confidence.'",
+                "Thomas Edison tested over 3,000 types of lightbulbs, and is known for saying that 'Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.'",
+                "Eleanor Roosevelt once said, 'With the new day comes new strength and new thoughts.'",
+                "'Start where you are. Use what you have. Do what you can.' - Arthur Ashe",
+                "Maya Angelou once said, 'We may encounter many defeats but we must not be defeated.'"];
+
+function displayRandQuote(session) {
+    index = Math.floor(Math.random() * quotes.length);
+    rand_quote = quotes[index];
+    session.send("%s", rand_quote);
+    session.send("Don't be too hard on yourself.");
+}
+
 function createSadCard(session) {
     session.send("Aww, sorry to hear that you're feeling down :(");
+    displayRandQuote(session);
     return new builder.HeroCard(session)
         .title('Song')
         .subtitle('Boost your mood with a song!')
