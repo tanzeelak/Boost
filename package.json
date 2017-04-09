@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,8 +11,17 @@
     "type": "git",
     "url": "git+https://github.com/tanzeelak/Boost.git"
   },
-  "author": "",
-  "license": "ISC",
+
+
+  "keywords": [
+    "boost",
+    "mood",
+    "songs",
+    "funny",
+    "pictures"
+  ],
+  "author": "Katrina Duong, Tanzeela Khan, Jessica Wang, and Nicole Wong",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/tanzeelak/Boost/issues"
   },
@@ -22,5 +32,8 @@
     "request": "^2.81.0",
     "tinyreq": "^3.2.2",
     "youtube-search": "^1.0.9"
+    "botbuilder": "^3.7.0",
+    "botbuilder-cognitiveservices": "^1.0.1",
+    "restify": "^4.3.0"
   }
 }
