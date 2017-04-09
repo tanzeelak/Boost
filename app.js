@@ -47,6 +47,7 @@ intents.onDefault([
     function (session, results){
         sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
         console.log(score);
+        session.userData.average = score;
         if (score >= 50){
           songService.selectSong(score).then(function (song_info) {
             console.log(link);
@@ -149,31 +150,13 @@ bot.dialog('/boost2', [
 bot.dialog('/happy', [
     function(session){
         session.send("cool");
-        // rand = "neat"
-        // session.send("Look what I found, isn't it %s?", rand);
-        // var cardh = createHappyCard(session);
-        // var msgh = new builder.Message(session).addAttachment(cardh);
-        // session.send(msgh);
+        rand = "neat"
+        session.send("Look what I found, isn't it %s?", rand);
+        var cardh = createHappyCard(session);
+        var msgh = new builder.Message(session).addAttachment(cardh);
+        session.send(msgh);
 
-        var card = search.imageSearch("funny memes").then(function (urlresult) {
-          
-        var imgURL = urlresult.slice(0, urlresult.length - 15);
-        // var imgURL = urlresult;
-        console.log(imgURL);
-          var imgDisp = new builder.HeroCard(session)
-            .title('memez')
-            .subtitle('lmao')
-            .text('eyyy')
-            .images([
-                builder.CardImage.create(session, imgURL)
-            ])
-            .buttons([]);
-
-            var msg =  new builder.Message(session).addAttachment(imgDisp);
-            session.send(msg);
-        }).catch(function (error) {
-          console.error(error);
-        });
+        dispFunnyCard(session);
 
         
     }
@@ -198,22 +181,22 @@ function createHappyCard(session) {
         ]);
 }
 
-function createFunnyCard(session) {
-    console.log("mark4");
+function dispFunnyCard(session) {
     search.imageSearch("funny memes").then(function (urlresult) {
           
-        //var imgURL = urlresult.slice(0, urlresult.length - 15);
-        var imgURL = "http://www.bing.com/cr?IG=7E952BACA994473DA6F9B92566698324&CID=25EF1EA32A1C64213D0914FC2B436549&rd=1&h=E_T3jWxvbGD1luWzJrJrs1vVh7rUFJ6425v2F6FJfuo&v=1&r=http%3a%2f%2fs5.favim.com%2forig%2f74%2ffunny-kids-funny-memes-funny-quotes-and-sayings-funny-images-funny-pictures-Favim.com-753774.jpg";
+        var imgURL = urlresult.slice(0, urlresult.length - 15);
         console.log(imgURL);
-          return new builder.HeroCard(session)
+          var imgDisp = new builder.HeroCard(session)
             .title('memez')
             .subtitle('lmao')
             .text('eyyy')
             .images([
                 builder.CardImage.create(session, imgURL)
             ])
-            .buttons([builder.CardAction.openUrl(session, imgURL, 'blah')]);
+            .buttons([]);
 
+            var msg =  new builder.Message(session).addAttachment(imgDisp);
+            session.send(msg);
         }).catch(function (error) {
           console.error(error);
         });
