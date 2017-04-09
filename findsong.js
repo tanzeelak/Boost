@@ -1,4 +1,5 @@
-var request = require('request');var searchUrl1 = "https://api.spotify.com/v1/search?q='happy'&limit=1&type=playlist";
+var request = require('request');
+var searchUrl1 = "https://api.spotify.com/v1/search?q='happy'&limit=1&type=playlist";
 var google = require('googleapis');
 var plus = google.plus('v1');
 
@@ -37,16 +38,22 @@ exports.selectSong = function(score){
         request(searchUrl2, function (error, response, body) {
           console.log("request");
           console.log("please e" + searchUrl2)
-          if (!error && response.statusCode == 200)
-          {  console.log("test");
-              var vidId, playListId, parsedBody, ytUrl;
-              parsedBody = JSON.parse(body);
-              var randSong = Math.floor(Math.random() * 10);
-              vidId = parsedBody.items[randSong].snippet.resourceId.videoId;
-              ytUrl = "https://www.youtube.com/watch?v=" + vidId;
-              //console.log(ytUrl);
-              return ytUrl;
+          if (!error && response.statusCode == 200) { 
+            resolve(getURL(body));
           }
         });
       });
 };
+
+function getURL(body) {
+  if (body) {
+    console.log("geturl");
+    var vidId, playListId, parsedBody, ytUrl;
+    parsedBody = JSON.parse(body);
+    var randSong = Math.floor(Math.random() * 10);
+    vidId = parsedBody.items[randSong].snippet.resourceId.videoId;
+    ytUrl = "https://www.youtube.com/watch?v=" + vidId;
+    //console.log(ytUrl);
+    return ytUrl;
+  }
+}
