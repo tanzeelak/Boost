@@ -30,7 +30,7 @@ var intents = new builder.IntentDialog();
 bot.dialog('/', intents);
 
 
-var link;
+var link, song_title, picURL;
 intents.onDefault([
     function (session, args, next) {
         if (!session.userData.name) {
@@ -47,9 +47,11 @@ intents.onDefault([
         sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
         console.log(score);
         if (score >= 50){
-          songService.selectSong(score).then(function (linkh) {
+          songService.selectSong(score).then(function (song_info) {
             console.log(link);
-            link = linkh;
+            link = song_info[0];
+            picURL = song_info[1];
+            song_title = song_info[2];
             var cardh = createHappyCard(session);
             var msgh = new builder.Message(session).addAttachment(cardh);
             session.send(msgh);
@@ -58,19 +60,27 @@ intents.onDefault([
           });
 
         } else if (score < 50) {
+          songService.selectSong(score).then(function (song_info) {
+            console.log(link);
+            link = song_info[0];
+            picURL = song_info[1];
+            song_title = song_info[2];
             var cards = createSadCard(session);
             var msgs = new builder.Message(session).addAttachment(cards);
             session.send(msgs);
-        }
-        session.send("I hope I was able to brighten your day!");
+            session.send("I hope I was able to brighten your day!");
         }).catch(function (error) {
           console.error(error);
         });
+      }
+    }).catch(function (error) {
+        console.error(error);
+      });
         sentimentService.analyzeKeyTopic(session.userData.stringToAnalyze).then(function (topic) {
-        console.log(topic);
-        if(topic != ""){
-          session.send("Tell me more about the " + topic);
-        }
+          console.log(topic);
+          if(topic != ""){
+            session.send("Tell me more about the " + topic);
+          }
 
         }).catch(function (error) {
           console.error(error);
@@ -132,11 +142,11 @@ function createHappyCard(session) {
     var str1 = 'YouTube Link: ';
     var title = str1.concat(link);
     return new builder.HeroCard(session)
-        .title('Song')
+        .title(song_title)
         .subtitle('Boost your mood with a song!')
-        .text('Click on the link below')
+        .text('Click on the link below:')
         .images([
-            builder.CardImage.create(session, 'http://www.clipartkid.com/images/76/cute-smiley-face-clipart-best-p6NKfr-clipart.jpeg')
+            builder.CardImage.create(session, picURL)
         ])
         .buttons([
             builder.CardAction.openUrl(session, link, title)
@@ -163,11 +173,11 @@ function createSadCard(session) {
     return new builder.HeroCard(session)
         .title('Song')
         .subtitle('Boost your mood with a song!')
-        .text('Click on the link below')
+        .text('Click on the link below:')
         .images([
-            builder.CardImage.create(session, 'https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg')
+            builder.CardImage.create(session, picURL)
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://www.youtube.com/', 'YouTube')
+            builder.CardAction.openUrl(session, link, title)
         ]);
 }
