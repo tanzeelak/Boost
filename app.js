@@ -4,6 +4,7 @@ var builder = require('botbuilder');
 var cognitiveservices = require('botbuilder-cognitiveservices');
 var sentimentService = require('./analyzeResponse');
 var songService = require('./findsong');
+var search = require('./getImageSearch');
 
 //=========================================================
 // Bot Setup
@@ -40,7 +41,7 @@ intents.onDefault([
         }
     },
     function (session, results) {
-        session.beginDialog('/boost');
+        session.beginDialog('/boost1');
         next();
     },
     function (session, results){
@@ -55,6 +56,7 @@ intents.onDefault([
             var cardh = createHappyCard(session);
             var msgh = new builder.Message(session).addAttachment(cardh);
             session.send(msgh);
+            session.beginDialog('/happy');
           }).catch(function (error) {
             console.error(error);
           });
@@ -72,11 +74,11 @@ intents.onDefault([
         }).catch(function (error) {
           console.error(error);
         });
-      }
+        }
     }).catch(function (error) {
         console.error(error);
-      });
-        sentimentService.analyzeKeyTopic(session.userData.stringToAnalyze).then(function (topic) {
+    });
+    sentimentService.analyzeKeyTopic(session.userData.stringToAnalyze).then(function (topic) {
           console.log(topic);
           if(topic != ""){
             session.send("Tell me more about the " + topic);
@@ -123,14 +125,39 @@ bot.dialog('/profile', [
     }
 ]);
 
-bot.dialog('/boost', [
+bot.dialog('/boost1', [
     function (session) {
-        session.send('Hello there! I\'m here to BOOST your mood! :D');
-        builder.Prompts.text(session, 'How are you feeling today?');
+        session.send('Hello, %s! I\'m here to BOOST your mood! :D', session.userData.name);
+        builder.Prompts.text(session, 'How are you feeling?');
     },
     function (session, results) {
         session.userData.stringToAnalyze = results.response;
         session.endDialog();
+    }
+]);
+
+bot.dialog('/boost2', [
+    function (session) {
+        builder.Prompts.text(session, 'What did you do today?');
+    },
+    function (session, results) {
+        session.userData.stringToAnalyze = results.response;
+        session.endDialog();
+    }
+]);
+
+bot.dialog('/happy', [
+    function(session){
+        session.send("cool");
+        // rand = "neat"
+        // session.send("Look what I found, isn't it %s?", rand);
+        // var cardh = createHappyCard(session);
+        // var msgh = new builder.Message(session).addAttachment(cardh);
+        // session.send(msgh);
+
+        var card = createFunnyCard(session);
+        var msg =  new builder.Message(session).addAttachment(card);
+        session.send(msg);
     }
 ]);
 
@@ -151,6 +178,26 @@ function createHappyCard(session) {
         .buttons([
             builder.CardAction.openUrl(session, link, title)
         ]);
+}
+
+function createFunnyCard(session) {
+    console.log("mark4");
+    search.imageSearch("funny memes").then(function (urlresult) {
+          
+        var imgURL = urlresult.slice(0, urlresult.length - 15);
+        console.log(imgURL);
+          return new builder.HeroCard(session)
+            .title('memez')
+            .subtitle('lmao')
+            .text('eyyy')
+            .images([
+                builder.CardImage.create(session, imgURL)
+            ])
+            .buttons([builder.CardAction.openUrl(session, imgURL, 'blah')]);
+
+        }).catch(function (error) {
+          console.error(error);
+        });
 }
 
 var quotes = ["Vince Lombardi once said, 'It's not whether you get knocked down, it's whether you get up.'",
