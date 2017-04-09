@@ -261,7 +261,7 @@ function createSadCard(session) {
 }
 
 function dispSadCard(session) {
-    var cardh = createSadCard(session);
+    var cardh = createHappyCard(session);
     var msgh = new builder.Message(session).addAttachment(cardh);
     session.send(msgh);
 }
