@@ -187,7 +187,7 @@ bot.dialog('/happy', [
             {
                 vidService.selectVideo("zumba").then(function (link) {
                     console.log(link);
-                    dispExerCard(session, link);
+                    dispExerCard(session, link, "Zumba");
 
               }).catch(function (error) {
                 console.error(error);
@@ -208,12 +208,37 @@ bot.dialog('/sad', [
         dispSadCard(session);
         displayRandQuote(session);
         session.send("Hope this brightens your day!");
-    }
+        session.beginDialog('/exercise');
+
+    },
+    function (session, results){
+
+
+            sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
+            console.log(score);
+            if (score > 50)
+            {
+                vidService.selectVideo("yoga").then(function (link) {
+                    console.log(link);
+                    dispExerCard(session, link, "Yoga");
+
+              }).catch(function (error) {
+                console.error(error);
+              });
+            }
+
+            }).catch(function (error) {
+                console.error(error);
+
+
+            });
+        }
+
 ]);
 
 bot.dialog('/exercise', [
     function (session) {
-        builder.Prompts.text(session, 'Interested in stretching?');
+        builder.Prompts.text(session, 'Interested in taking a stretch, homedawg?');
     },
     function (session, results) {
         session.userData.stringToAnalyze = results.response;
@@ -242,17 +267,17 @@ function createHappyCard(session) {
         ]);
 }
 
-function dispExerCard(session, link) {
-    var cardh = createExerciseCard(session, link);
+function dispExerCard(session, link, keyword) {
+    var cardh = createExerciseCard(session, link, keyword);
     var msgh = new builder.Message(session).addAttachment(cardh);
     session.send(msgh);
 }
 
-function createExerciseCard(session, link) {
+function createExerciseCard(session, link, keyword) {
     // var str1 = 'YouTube Link: ';
     // var title = str1.concat(link);
     return new builder.HeroCard(session)
-        .title("Zumba")
+        .title(keyword)
         .subtitle('Move dem hips eyy!')
         .text('Click on the link below:')
         // .images([
