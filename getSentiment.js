@@ -34,13 +34,8 @@ exports.getKeyPhrases = function(sentence) {
 var req_headers = {'Content-Type':'application/json', 'Ocp-Apim-Subscription-Key':account_key};
 var batch_sentiment_url = 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment';
 
+
 exports.analyzeSentiment = function (sentence) {
-	getSentiment(sentence).then(function (score) {return score;})
-                .catch(function (error) { console.error(error); });
-
-}
-
-function getSentiment (sentence) {
 	var requestData = '{"documents":[{"id":"1","text":"' + sentence + '"}]}';
 	//var json_obj = JSON.parse(requestData);
 	//console.log(json_obj);
