@@ -2,11 +2,21 @@
 <html>
 <head>
   <title> BOOST! </title>
-  <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans|Oleo+Script|Fugaz+One|Faster+One" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
   <style>
     h1{
-      font-family: 'Pacifico', sans-serif;
+      margin-top: 65px;
+      font-family: 'Faster One', sans-serif;
+      font-size: 75px;
+      text-align: center;
+      margin-bottom: 0;
+    }
+    h3{
+      margin-top: 0;
+      font-family: 'Oleo Script', sans-serif;
+      font-size: 20px;
       text-align: center;
     }
     body{
@@ -16,31 +26,89 @@
     iframe{
       display: block;
       margin: auto;
-      height: 500px;
+      height: 550px;
       width: 800px;
       background-color: rgba(255, 255, 255, .4);
       border-radius: 11px;
     }
-    #git{
-      margin: auto;
+    .container-fluid{
+      font-family: 'Macondo', sans-serif;
+      font-size: 25px;
+      background-color: rgba(0, 0, 0, .4);
+    }
+    a{
+      color: white;
+    }
+    p{
+      text-align: center;
+      font-size: 25px;
+    }
+    .info{
+      padding: 10px 325px;
+    }
+    #names{
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    #owl{
+      height: 80px;
+    }
+    #link{
       text-align: center;
     }
   </style>
 
 </head>
 
-<body>
-  <div id=#git>
-    <a href="https://github.com/tanzeelak/Boost">
-      <img src="github32black.png" alt="GitHub" target="_blank">
-    </a>
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+  <nav class="navbar navbar-fixed-top">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#About">About</a></li>
+      <li><a href="#Reference">Health and Wellness Links</a></li>
+      <li><a href="#Team">Team</a></li>
+      <li><a href="https://github.com/tanzeelak/Boost">
+        <img src="github32white.png" alt="GitHub" target="_blank">
+      </a></li>
+    </ul>
   </div>
+</nav>
   <h1> BOOST! </h1>
+  <h3> Type to begin! </h3>
   <div>
     <iframe src='https://webchat.botframework.com/embed/the_mood_booster?s=sAdLOzaVcfg.cwA.acc.GIpBhBV0Bjj7sOsf2YjnOYkvbwtx3CjFi2Vn13YEnBM'></iframe>
   </div>
 
+  <div class="info" id="About">
+  <h1>About</h1>
+  <p>Introducing.....the Mood Booster! Our project aims to energize you any time, any day! In times of joy, sadness, or stress,
+    the Mood Booster is here to cheer you up. With motivational quotes, lighthearted memes, and upbeat songs, our chat bot will always be there for you!
+    	&#60;3 </p>
+  </div>
 
-  </footer>
+  <div class="info" id="Reference">
+  <h1>Health and Wellness Links</h1>
+    <!-- <a id="link" href="http://www.counseling.ucla.edu/">UCLA Counseling</a>
+    <a id="link" href="https://engemannshc.usc.edu/counseling/">USC Counseling</a> -->
+
+  </div>
+
+  <div class="info" id="Team">
+  <h1>Team</h1>
+  <p>Our team members are: </p>
+
+      <p id="names">Katrina Duong (Computer Science 2nd year)</p>
+      <p id="names">Tanzeela Khan (Computer Science and Engineering 2nd year)</p>
+      <p id="names">Wei Wang (Computer Science Master's student)</p>
+      <p id="names">Nicole Wong (Computer Science 2nd year)</p>
+
+  <br> </br>
+  <p>We've teamed up from both UCLA and USC to create an all-inclusive bot designed to help Bruins, Trojans, and all people alike.
+    Enjoy!</p>
+
+  <br> </br>
+  <p>Thank you to the sponsors and organizers of AthenaHacks for supporting women in tech! </p>
+  <center><img id="owl" src="owl.png"></center>
+  </div>
 </body>
 </html>
