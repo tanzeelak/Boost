@@ -1,16 +1,7 @@
+//Import Modules
 var restify = require('restify');
 var builder = require('botbuilder');
 var cognitiveservices = require('botbuilder-cognitiveservices');
-
-// Set up QnA
-var recognizer = new cognitiveservices.QnAMakerRecognizer({
-	knowledgeBaseId: '818e95e3-0f57-4cd6-a65c-278887d39603',
-	subscriptionKey: 'bffbabd3321c4e08a6c7d8de204b4533'});
-
-var boostDialog = new cognitiveservices.QnAMakerDialog({
-	recognizers: [recognizer],
-	defaultMessage: 'No match! Try changing the query terms!',
-	qnaThreshold: 0.3});
 
 //=========================================================
 // Bot Setup
@@ -31,28 +22,10 @@ var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
 //=========================================================
-// Bots Dialogs
+// Bot Intents
 //=========================================================
 var intents = new builder.IntentDialog();
 bot.dialog('/', intents);
-
-intents.matches(/^change name/i, [
-    function (session) {
-        session.beginDialog('/profile');
-    },
-    function (session, results) {
-        session.send('Ok... Changed your name to %s', session.userData.name);
-    }
-]);
-
-intents.matches(/^boost/i, [
-    function (session) {
-        builder.Prompts.text(session, 'Hi! Welcome to boost');
-    },
-    function (session) {
-        session.beginDialog('/boost');
-    }
-]);
 
 intents.onDefault([
     function (session, args, next) {
@@ -67,7 +40,47 @@ intents.onDefault([
     }
 ]);
 
-bot.dialog('/boost', boostDialog);
+intents.matches(/^change name/i, [
+    function (session) {
+        session.beginDialog('/profile');
+    },
+    function (session, results) {
+        session.send('Ok... Changed your name to %s', session.userData.name);
+    }
+]);
+
+intents.matches(/boost/i, [
+    function (session) {
+        session.beginDialog('/boost');
+    },
+    function (session, results){
+      session.send('the string to analyze is %s', session.userData.stringToAnalyze);
+      //var score = analyzeSentiment(session.userData.stringToAnalyze);
+      var score = 100;
+      if (score >= 50){
+          var cardh = createHappyCard(session);
+          var msgh = new builder.Message(session).addAttachment(cardh);
+          session.send(msgh);
+      }else if (score < 50) {
+          var cards = createSadCard(session);
+          var msgs = new builder.Message(session).addAttachment(cards);
+          session.send(msgs);
+      }
+    }
+]);
+
+intents.matches(/^song/i,[
+    function (session, results){
+        var card = createSongCard(session);
+        var msg = new builder.Message(session).addAttachment(card);
+        session.send(msg);
+    }
+]);
+
+
+//=========================================================
+// Bot Dialogs
+//=========================================================
 
 bot.dialog('/profile', [
     function (session) {
@@ -78,3 +91,45 @@ bot.dialog('/profile', [
         session.endDialog();
     }
 ]);
+
+bot.dialog('/boost', [
+    function (session) {
+        session.send('Hello there! I\'m here to BOOST your mood! :D');
+        builder.Prompts.text(session, 'How are you feeling today?');
+    },
+    function (session, results) {
+        session.userData.stringToAnalyze = results.response;
+        session.endDialog();
+    }
+]);
+
+//=========================================================
+// Bot Functions
+//=========================================================
+function createHappyCard(session) {
+    session.send("Glad to hear that you're feeling good today! :)");
+    return new builder.HeroCard(session)
+        .title('Song')
+        .subtitle('Boost your mood with a song!')
+        .text('Click on the link below')
+        .images([
+            builder.CardImage.create(session, 'http://www.clipartkid.com/images/76/cute-smiley-face-clipart-best-p6NKfr-clipart.jpeg')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'https://www.youtube.com/', 'YouTube')
+        ]);
+}
+
+function createSadCard(session) {
+    session.send("Aww, sorry to hear that you're feeling down :(");
+    return new builder.HeroCard(session)
+        .title('Song')
+        .subtitle('Boost your mood with a song!')
+        .text('Click on the link below')
+        .images([
+            builder.CardImage.create(session, 'https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'https://www.youtube.com/', 'YouTube')
+        ]);
+}
