@@ -7,7 +7,7 @@ var searchUrl2 = "https://www.googleapis.com/youtube/v3/playlistItems?part=snipp
 
 
 
-var mood = 'sad';
+var mood;
 var keyword = mood + ' mood song';
 var playlistHref, wat, playlistId;
 var search = require('youtube-search');
@@ -16,24 +16,6 @@ var opts = {
   maxResults: 10,
   key: 'AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A'
 };
-
-search(keyword, opts, function(err, results) {
-  if(err) return console.log(err);
-
-  var randSong = Math.floor(Math.random() * 10);
-  // console.log()
-  // console.log(results);
-  playlistHref = results[randSong].link;
-  playlistId = results[randSong].id;
-  // console.log(playlistHref);
-  // console.log(playlistId);
-  // wat = playlistHref.replace("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=", "");
-  // console.log(playlistHref);
-  // console.log(wat);
-
-  // console.dir(results)
-  // console.dir(playlistHref);
-});
 
 
 function selectSong(mood){
@@ -44,7 +26,6 @@ function selectSong(mood){
     else if (mood === 'sad')
     {
         searchUrl2 = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PL0B27929980B79760&key=AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A"
-
     }
 }
 
@@ -53,16 +34,10 @@ function selectSong(mood){
 request(searchUrl2, function (error, response, body) {
   if (!error && response.statusCode == 200)
   {
-
-    //   console.log(body);
-
       var vidId, playListId, parsedBody, ytUrl;
       parsedBody = JSON.parse(body);
       var randSong = Math.floor(Math.random() * 10);
       vidId = parsedBody.items[randSong].snippet.resourceId.videoId;
-    //   playlistId = parsedBody.items[0].snippet.playlistId;
-    //   console.log(vidId);
-    //   console.log(playlistId);
       ytUrl = "https://www.youtube.com/watch?v=" + vidId;
       console.log(ytUrl);
 

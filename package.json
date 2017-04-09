@@ -1,0 +1,26 @@
+{
+  "name": "boost",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanzeelak/Boost.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tanzeelak/Boost/issues"
+  },
+  "homepage": "https://github.com/tanzeelak/Boost#readme",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "googleapis": "^18.0.0",
+    "request": "^2.81.0",
+    "tinyreq": "^3.2.2",
+    "youtube-search": "^1.0.9"
+  }
+}
