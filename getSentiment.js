@@ -80,8 +80,8 @@ function extractScore(body) {
 			}
 		}
 	}
-	console.log(totalScore / count);
-	return totalScore / count;
+	//console.log(totalScore / count);
+	return totalScore / count * 100;
 }
 
 
