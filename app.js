@@ -4,6 +4,7 @@ var builder = require('botbuilder');
 var cognitiveservices = require('botbuilder-cognitiveservices');
 var sentimentService = require('./analyzeResponse');
 var songService = require('./findsong');
+var search = require('./getImageSearch');
 
 //=========================================================
 // Bot Setup
@@ -40,51 +41,62 @@ intents.onDefault([
         }
     },
     function (session, results) {
-        session.beginDialog('/boost');
+        session.beginDialog('/boost1');
         next();
     },
     function (session, results){
         sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
         console.log(score);
-        if (score >= 50){
-          songService.selectSong(score).then(function (song_info) {
-            console.log(link);
-            link = song_info[0];
-            picURL = song_info[1];
-            song_title = song_info[2];
-            var cardh = createHappyCard(session);
-            var msgh = new builder.Message(session).addAttachment(cardh);
-            session.send(msgh);
-          }).catch(function (error) {
-            console.error(error);
-          });
-
-        } else if (score < 50) {
-          songService.selectSong(score).then(function (song_info) {
-            console.log(link);
-            link = song_info[0];
-            picURL = song_info[1];
-            song_title = song_info[2];
-            var cards = createSadCard(session);
-            var msgs = new builder.Message(session).addAttachment(cards);
-            session.send(msgs);
-            session.send("I hope I was able to brighten your day!");
+        session.userData.average = score;
+        session.beginDialog('/boost2');
         }).catch(function (error) {
-          console.error(error);
+            console.error(error);
         });
-      }
-    }).catch(function (error) {
-        console.error(error);
-      });
-        sentimentService.analyzeKeyTopic(session.userData.stringToAnalyze).then(function (topic) {
+    },
+    function (session, results){
+        sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
+        console.log(score);
+        // calc avg score
+        session.userData.average += score;
+        session.userData.average /= 2.0;
+        if (session.userData.average >= 50){
+            // get happy song
+            songService.selectSong(score).then(function (song_info) {
+            console.log(link);
+            link = song_info[0];
+            picURL = song_info[1];
+            song_title = song_info[2];
+
+            sentimentService.analyzeKeyTopic(session.userData.stringToAnalyze).then(function (topic) {
           console.log(topic);
           if(topic != ""){
-            session.send("Tell me more about the " + topic);
+            session.send("But anyway, tell me more about the " + topic);
           }
 
         }).catch(function (error) {
           console.error(error);
         });
+
+            session.beginDialog('/happy');
+          }).catch(function (error) {
+            console.error(error);
+          });
+
+        } else if (session.userData.average < 50) {
+          songService.selectSong(score).then(function (song_info) {
+            console.log(link);
+            link = song_info[0];
+            picURL = song_info[1];
+            song_title = song_info[2];
+
+            session.beginDialog('/sad');
+        }).catch(function (error) {
+          console.error(error);
+        });
+        }
+    }).catch(function (error) {
+        console.error(error);
+    });
 
     }
 ]);
@@ -123,10 +135,10 @@ bot.dialog('/profile', [
     }
 ]);
 
-bot.dialog('/boost', [
+bot.dialog('/boost1', [
     function (session) {
-        session.send('Hello there! I\'m here to BOOST your mood! :D');
-        builder.Prompts.text(session, 'How are you feeling today?');
+        session.send('Hello, %s! I\'m here to BOOST your mood! :D', session.userData.name);
+        builder.Prompts.text(session, 'How are you feeling?');
     },
     function (session, results) {
         session.userData.stringToAnalyze = results.response;
@@ -134,11 +146,51 @@ bot.dialog('/boost', [
     }
 ]);
 
+bot.dialog('/boost2', [
+    function (session) {
+        builder.Prompts.text(session, 'What did you do today?');
+    },
+    function (session, results) {
+        session.userData.stringToAnalyze = results.response;
+        session.endDialog();
+    }
+]);
+
+var adj = ["funny", "cute", "great"];
+
+bot.dialog('/happy', [
+    function(session){
+        session.send("cool");
+        var ind = Math.floor(Math.random() * 3);
+        session.send("Look what I found, isn't it %s?", adj[ind]);
+        if(ind == 0) {
+            dispFunnyCard(session, "funny memes");
+
+        } else if(ind == 1) {
+            dispFunnyCard(session, "cute animals");
+        } else {
+            dispSongCard(session);
+        }
+        
+        
+    }
+]);
+
+bot.dialog('/sad', [
+    function(session){
+        session.send("Aww, sorry to hear that you're feeling down :(");
+        dispSadCard(session);
+        displayRandQuote(session);
+        session.send("Hope this brightens your day!");
+    }
+]);
+
 //=========================================================
 // Bot Functions
 //=========================================================
 function createHappyCard(session) {
-    session.send("Glad to hear that you're feeling good today! :)");
+    //session.send("Glad to hear that you're feeling good today! :)");
+    //dispSongCard(session);
     var str1 = 'YouTube Link: ';
     var title = str1.concat(link);
     return new builder.HeroCard(session)
@@ -151,6 +203,34 @@ function createHappyCard(session) {
         .buttons([
             builder.CardAction.openUrl(session, link, title)
         ]);
+}
+
+// happy song
+function dispSongCard(session) {
+    var cardh = createHappyCard(session);
+    var msgh = new builder.Message(session).addAttachment(cardh);
+    session.send(msgh);
+}
+
+function dispFunnyCard(session, input) {
+    search.imageSearch(input).then(function (urlresult) {
+          
+        var imgURL = urlresult.slice(0, urlresult.length - 15);
+        console.log(imgURL);
+          var imgDisp = new builder.HeroCard(session)
+            .title('memez')
+            .subtitle('lmao')
+            .text('eyyy')
+            .images([
+                builder.CardImage.create(session, imgURL)
+            ])
+            .buttons([builder.CardAction.openUrl(session, imgURL, "click to expand")]);
+
+            var msg =  new builder.Message(session).addAttachment(imgDisp);
+            session.send(msg);
+        }).catch(function (error) {
+          console.error(error);
+        });
 }
 
 var quotes = ["Vince Lombardi once said, 'It's not whether you get knocked down, it's whether you get up.'",
@@ -168,8 +248,6 @@ function displayRandQuote(session) {
 }
 
 function createSadCard(session) {
-    session.send("Aww, sorry to hear that you're feeling down :(");
-    displayRandQuote(session);
     return new builder.HeroCard(session)
         .title('Song')
         .subtitle('Boost your mood with a song!')
@@ -180,4 +258,10 @@ function createSadCard(session) {
         .buttons([
             builder.CardAction.openUrl(session, link, title)
         ]);
+}
+
+function dispSadCard(session) {
+    var cardh = createHappyCard(session);
+    var msgh = new builder.Message(session).addAttachment(cardh);
+    session.send(msgh);
 }
