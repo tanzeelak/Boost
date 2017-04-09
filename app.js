@@ -2,7 +2,8 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var cognitiveservices = require('botbuilder-cognitiveservices');
-var sentimentService = require('./getSentiment');
+var sentimentService = require('./analyzeResponse');
+var songService = require('./findsong');
 
 //=========================================================
 // Bot Setup
@@ -28,6 +29,8 @@ server.post('/api/messages', connector.listen());
 var intents = new builder.IntentDialog();
 bot.dialog('/', intents);
 
+
+var link;
 intents.onDefault([
     function (session, args, next) {
         if (!session.userData.name) {
@@ -44,18 +47,35 @@ intents.onDefault([
         sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
         console.log(score);
         if (score >= 50){
+          songService.selectSong(score).then(function (link) {
+            console.log(link);
+
             var cardh = createHappyCard(session);
             var msgh = new builder.Message(session).addAttachment(cardh);
             session.send(msgh);
-        }else if (score < 50) {
+          }).catch(function (error) {
+            console.error(error);
+          });
+
+        } else if (score < 50) {
             var cards = createSadCard(session);
             var msgs = new builder.Message(session).addAttachment(cards);
             session.send(msgs);
         }
         session.send("I hope I was able to brighten your day!");
-      }).catch(function (error) {
-        console.error(error);
-      });
+        }).catch(function (error) {
+          console.error(error);
+        });
+        sentimentService.analyzeKeyTopic(session.userData.stringToAnalyze).then(function (topic) {
+        console.log(topic);
+        if(topic != ""){
+          session.send("Tell me more about the " + topic);
+        }
+
+        }).catch(function (error) {
+          console.error(error);
+        });
+
     }
 ]);
 
@@ -68,27 +88,7 @@ intents.matches(/^change name/i, [
     }
 ]);
 
-intents.matches(/boost/i, [
-    function (session) {
-        session.beginDialog('/boost');
-    },
-    function (session, results){
-        sentimentService.analyzeSentiment(session.userData.stringToAnalyze).then(function (score) {
-        console.log(score);
-        if (score >= 50){
-            var cardh = createHappyCard(session);
-            var msgh = new builder.Message(session).addAttachment(cardh);
-            session.send(msgh);
-        }else if (score < 50) {
-            var cards = createSadCard(session);
-            var msgs = new builder.Message(session).addAttachment(cards);
-            session.send(msgs);
-        }
-      }).catch(function (error) {
-        console.error(error);
-      });
-    }
-]);
+
 
 intents.matches(/^song/i,[
     function (session, results){
@@ -137,7 +137,7 @@ function createHappyCard(session) {
             builder.CardImage.create(session, 'http://www.clipartkid.com/images/76/cute-smiley-face-clipart-best-p6NKfr-clipart.jpeg')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://www.youtube.com/', 'YouTube')
+            builder.CardAction.openUrl(session, "https://www.youtube.com/", 'YouTube')
         ]);
 }
 

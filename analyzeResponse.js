@@ -30,7 +30,7 @@ exports.analyzeSentiment = function (sentence) {
 		        }
 			});
 		}
-		
+
 	);
 };
 
@@ -55,7 +55,7 @@ exports.analyzeKeyTopic = function (sentence) {
 		        }
 			});
 		}
-		
+
 	);
 };
 
@@ -64,7 +64,7 @@ function extractTopic(body) {
 		body = JSON.parse(body);
 		return body.documents[0]['keyPhrases'][0];
 	}
-	return "no topic";
+	return "";
 }
 function extractScore(body) {
 	var totalScore = 0;
@@ -84,4 +84,4 @@ function extractScore(body) {
 }
 
 
-//detect 
+//detect

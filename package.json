@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,8 +10,6 @@
     "type": "git",
     "url": "git+https://github.com/tanzeelak/Boost.git"
   },
-
-
   "keywords": [
     "boost",
     "mood",
@@ -27,13 +24,13 @@
   },
   "homepage": "https://github.com/tanzeelak/Boost#readme",
   "dependencies": {
+    "botbuilder": "^3.7.0",
+    "botbuilder-cognitiveservices": "^1.0.1",
     "cheerio": "^0.22.0",
     "googleapis": "^18.0.0",
     "request": "^2.81.0",
+    "restify": "^4.3.0",
     "tinyreq": "^3.2.2",
-    "youtube-search": "^1.0.9",
-    "botbuilder": "^3.7.0",
-    "botbuilder-cognitiveservices": "^1.0.1",
-    "restify": "^4.3.0"
+    "youtube-search": "^1.0.9"
   }
 }

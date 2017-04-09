@@ -3,8 +3,8 @@ var google = require('googleapis');
 var plus = google.plus('v1');
 
 // var searchUrl2 = "https://www.googleapis.com/youtube/v3/videos?id=7lCDEYXw3mM&key=AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A&part=snippet,contentDetails,statistics,status"
-var searchUrl2 = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PL4ziQDgKv4ErEK9Ey_qziU0IvtXNmwjzO&key=AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A"
-
+//var searchUrl2 = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PL4ziQDgKv4ErEK9Ey_qziU0IvtXNmwjzO&key=AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A"
+var searchUrl2;
 
 
 var mood;
@@ -14,32 +14,39 @@ var search = require('youtube-search');
 
 var opts = {
   maxResults: 10,
-  key: 'AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A'
+  key: 'AIzaSyCQg6fG7W5mATUZopgZDkMBfQ16_Vgt834'
 };
 
 
-function selectSong(mood){
-    if (mood === 'happy')
+
+
+exports.selectSong = function(score){
+  console.log("if state1");
+    if (score > 50)
     {
+      console.log("if state");
         searchUrl2 = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PL4ziQDgKv4ErEK9Ey_qziU0IvtXNmwjzO&key=AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A"
     }
-    else if (mood === 'sad')
+    else if (score <= 50)
     {
         searchUrl2 = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PL0B27929980B79760&key=AIzaSyCjQo35O-ovuHaqOUuiJJDbY4k55Udea6A"
     }
-}
 
-
-
-request(searchUrl2, function (error, response, body) {
-  if (!error && response.statusCode == 200)
-  {
-      var vidId, playListId, parsedBody, ytUrl;
-      parsedBody = JSON.parse(body);
-      var randSong = Math.floor(Math.random() * 10);
-      vidId = parsedBody.items[randSong].snippet.resourceId.videoId;
-      ytUrl = "https://www.youtube.com/watch?v=" + vidId;
-      console.log(ytUrl);
-
-}
-});
+    return new Promise(
+      function (resolve, reject) {
+        request(searchUrl2, function (error, response, body) {
+          console.log("request");
+          console.log("please e" + searchUrl2)
+          if (!error && response.statusCode == 200)
+          {  console.log("test");
+              var vidId, playListId, parsedBody, ytUrl;
+              parsedBody = JSON.parse(body);
+              var randSong = Math.floor(Math.random() * 10);
+              vidId = parsedBody.items[randSong].snippet.resourceId.videoId;
+              ytUrl = "https://www.youtube.com/watch?v=" + vidId;
+              //console.log(ytUrl);
+              return ytUrl;
+          }
+        });
+      });
+};
